@@ -4,6 +4,7 @@
 .node text { font: 14px Arial, sans-serif; fill: #1e293b; pointer-events: none; }
 .canvas-wrap { background-image: radial-gradient(#dbe3ee 1px, transparent 1px); background-size: 18px 18px; }
 .edge { fill: none; stroke: #3b82f6; stroke-width: 2; }
+.node { cursor: move; }
 
 * { box-sizing: border-box; }
 body { margin: 0; font: 14px Arial, sans-serif; color: #1e293b; }

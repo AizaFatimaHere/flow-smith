@@ -49,11 +49,39 @@ function render() {
     label.setAttribute('text-anchor', 'middle');
     label.textContent = node.label;
     group.appendChild(label);
+    group.addEventListener('pointerdown', startDrag);
     nodesLayer.appendChild(group);
   }
   renderEdges();
 }
 
+function startDrag(event) {
+  if (event.button !== 0) return;
+  const node = nodes.find(item => item.id === event.currentTarget.dataset.id);
+  if (!node) return;
+  const point = svg.createSVGPoint();
+  point.x = event.clientX;
+  point.y = event.clientY;
+  const start = point.matrixTransform(viewport.getScreenCTM().inverse());
+  const offsetX = start.x - node.x;
+  const offsetY = start.y - node.y;
+
+  function move(e) {
+    const p = svg.createSVGPoint();
+    p.x = e.clientX;
+    p.y = e.clientY;
+    const current = p.matrixTransform(viewport.getScreenCTM().inverse());
+    node.x = Math.round(current.x - offsetX);
+    node.y = Math.round(current.y - offsetY);
+    render();
+  }
+  function stop() {
+    svg.removeEventListener('pointermove', move);
+  }
+  svg.addEventListener('pointermove', move);
+  svg.addEventListener('pointerup', stop, { once: true });
+  svg.addEventListener('pointercancel', stop, { once: true });
+}
 function renderEdges() { edgesLayer.innerHTML = ''; }
 
 document.getElementById('addNode').addEventListener('click', () => {
