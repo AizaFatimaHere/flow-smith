@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flow Smith</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header><h1>Flow Smith</h1><div class="toolbar"><button id="addNode">Add node</button></div></header>
+  <main>
+    <section class="canvas-wrap">
+      <svg id="svg" aria-label="Workflow canvas">
+        <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0 0 L10 3 L0 6 Z"></path></marker></defs>
+        <g id="viewport"><g id="edges"></g><g id="nodes"></g></g>
+      </svg>
+      
+    </section>
+    <aside><h2>Quick tips</h2><p>Click Add node to get started.</p></aside>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
