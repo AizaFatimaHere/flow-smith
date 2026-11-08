@@ -15,6 +15,14 @@
         <g id="viewport"><g id="edges"></g><g id="nodes"></g></g>
       </svg>
       
+  <section id="settings" class="panel hidden">
+    <h2>Node settings</h2>
+    <label>Label<input id="nodeLabel" type="text"></label>
+    <label>Shape<select id="nodeType"><option value="process">Process</option><option value="terminator">Start / End</option><option value="decision">Decision</option><option value="document">Document</option><option value="database">Database</option></select></label>
+    <label>Fill<input id="nodeFill" type="color" value="#ffffff"></label>
+    <label>Border<input id="nodeStroke" type="color" value="#3b82f6"></label>
+    <div class="actions"><button id="saveNode">Save</button><button id="closeSettings">Close</button></div>
+  </section>
     </section>
     <aside><h2>Quick tips</h2><p>Drag nodes to move them. Shift-click two nodes to connect them.</p></aside>
   </main>

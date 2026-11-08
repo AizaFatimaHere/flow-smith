@@ -6,6 +6,10 @@
 .edge { fill: none; stroke: #3b82f6; stroke-width: 2; }
 .node { cursor: move; }
 .edge { pointer-events: stroke; }
+.panel { position: absolute; top: 16px; right: 16px; width: 220px; padding: 14px; background: white; border: 1px solid #dbe2ea; border-radius: 10px; box-shadow: 0 8px 25px #0f172a18; }
+.panel label { display: block; margin: 10px 0; font-size: 13px; }
+.panel input, .panel select { display: block; width: 100%; margin-top: 4px; }
+.hidden { display: none; }
 
 * { box-sizing: border-box; }
 body { margin: 0; font: 14px Arial, sans-serif; color: #1e293b; }

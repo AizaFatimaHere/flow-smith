@@ -60,6 +60,7 @@ function render() {
         render();
       }
     });
+    group.addEventListener('dblclick', () => openSettings(node));
     nodesLayer.appendChild(group);
   }
   renderEdges();
@@ -116,6 +117,32 @@ function renderEdges() {
     edgesLayer.appendChild(path);
   }
 }
+
+const settings = document.getElementById('settings');
+let editingId = null;
+
+function openSettings(node) {
+  editingId = node.id;
+  document.getElementById('nodeLabel').value = node.label;
+  document.getElementById('nodeType').value = node.type;
+  document.getElementById('nodeFill').value = node.fill || '#ffffff';
+  document.getElementById('nodeStroke').value = node.stroke || '#3b82f6';
+  settings.classList.remove('hidden');
+}
+
+document.getElementById('saveNode').addEventListener('click', () => {
+  const node = nodes.find(item => item.id === editingId);
+  if (!node) return;
+  node.label = document.getElementById('nodeLabel').value.trim() || node.label;
+  node.type = document.getElementById('nodeType').value;
+  node.fill = document.getElementById('nodeFill').value;
+  node.stroke = document.getElementById('nodeStroke').value;
+  const sizes = { process: [150, 64], terminator: [150, 52], decision: [110, 110], document: [160, 78], database: [150, 78] };
+  [node.w, node.h] = sizes[node.type] || sizes.process;
+  render();
+  settings.classList.add('hidden');
+});
+document.getElementById('closeSettings').addEventListener('click', () => settings.classList.add('hidden'));
 
 document.getElementById('addNode').addEventListener('click', () => {
   addNode(180 + nodes.length * 18, 120 + nodes.length * 18, 'process', 'New step');
