@@ -50,6 +50,16 @@ function render() {
     label.textContent = node.label;
     group.appendChild(label);
     group.addEventListener('pointerdown', startDrag);
+    group.addEventListener('click', (event) => {
+      if (event.shiftKey && selectedId && selectedId !== node.id) {
+        addEdge(selectedId, node.id);
+        selectedId = null;
+        render();
+      } else {
+        selectedId = node.id;
+        render();
+      }
+    });
     nodesLayer.appendChild(group);
   }
   renderEdges();
@@ -82,7 +92,30 @@ function startDrag(event) {
   svg.addEventListener('pointerup', stop, { once: true });
   svg.addEventListener('pointercancel', stop, { once: true });
 }
-function renderEdges() { edgesLayer.innerHTML = ''; }
+function addEdge(from, to) {
+  if (edges.some(edge => edge.from === from && edge.to === to)) return;
+  edges.push({ id: 'e' + Math.random().toString(36).slice(2, 8), from, to });
+  renderEdges();
+}
+
+function renderEdges() {
+  edgesLayer.innerHTML = '';
+  for (const edge of edges) {
+    const from = nodes.find(node => node.id === edge.from);
+    const to = nodes.find(node => node.id === edge.to);
+    if (!from || !to) continue;
+    const path = document.createElementNS(NS, 'path');
+    const x1 = from.x + from.w / 2;
+    const y1 = from.y + from.h;
+    const x2 = to.x + to.w / 2;
+    const y2 = to.y;
+    const mid = (y1 + y2) / 2;
+    path.setAttribute('d', `M${x1} ${y1} C${x1} ${mid}, ${x2} ${mid}, ${x2} ${y2}`);
+    path.setAttribute('class', 'edge');
+    path.setAttribute('marker-end', 'url(#arrow)');
+    edgesLayer.appendChild(path);
+  }
+}
 
 document.getElementById('addNode').addEventListener('click', () => {
   addNode(180 + nodes.length * 18, 120 + nodes.length * 18, 'process', 'New step');
