@@ -163,6 +163,34 @@ window.addEventListener('keydown', (event) => {
   }
 });
 
+let pan = { x: 0, y: 0 };
+let scale = 1;
+let panStart = null;
+
+svg.addEventListener('pointerdown', (event) => {
+  if (event.target.closest('.node')) return;
+  if (event.button !== 0 && event.button !== 1) return;
+  panStart = { x: event.clientX, y: event.clientY, left: pan.x, top: pan.y };
+});
+svg.addEventListener('pointermove', (event) => {
+  if (!panStart) return;
+  pan.x = panStart.left + event.clientX - panStart.x;
+  pan.y = panStart.top + event.clientY - panStart.y;
+  applyView();
+});
+svg.addEventListener('pointerup', () => panStart = null);
+svg.addEventListener('pointercancel', () => panStart = null);
+svg.addEventListener('wheel', (event) => {
+  if (!event.ctrlKey && !event.metaKey) return;
+  event.preventDefault();
+  scale = Math.max(0.25, Math.min(3, scale + (event.deltaY < 0 ? 0.1 : -0.1)));
+  applyView();
+}, { passive: false });
+
+function applyView() {
+  viewport.setAttribute('transform', `translate(${pan.x},${pan.y}) scale(${scale})`);
+}
+
 document.getElementById('addNode').addEventListener('click', () => {
   addNode(180 + nodes.length * 18, 120 + nodes.length * 18, 'process', 'New step');
 });
