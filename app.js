@@ -61,6 +61,10 @@ function render() {
       }
     });
     group.addEventListener('dblclick', () => openSettings(node));
+    group.addEventListener('contextmenu', (event) => {
+      event.preventDefault();
+      duplicateNode(node);
+    });
     nodesLayer.appendChild(group);
   }
   renderEdges();
@@ -143,6 +147,21 @@ document.getElementById('saveNode').addEventListener('click', () => {
   settings.classList.add('hidden');
 });
 document.getElementById('closeSettings').addEventListener('click', () => settings.classList.add('hidden'));
+
+function duplicateNode(node) {
+  const copy = { ...node, id: 'n' + Math.random().toString(36).slice(2, 9), x: node.x + 24, y: node.y + 24 };
+  nodes.push(copy);
+  render();
+}
+
+window.addEventListener('keydown', (event) => {
+  if ((event.key === 'Delete' || event.key === 'Backspace') && selectedId) {
+    nodes = nodes.filter(node => node.id !== selectedId);
+    edges = edges.filter(edge => edge.from !== selectedId && edge.to !== selectedId);
+    selectedId = null;
+    render();
+  }
+});
 
 document.getElementById('addNode').addEventListener('click', () => {
   addNode(180 + nodes.length * 18, 120 + nodes.length * 18, 'process', 'New step');

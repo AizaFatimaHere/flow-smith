@@ -10,6 +10,7 @@
 .panel label { display: block; margin: 10px 0; font-size: 13px; }
 .panel input, .panel select { display: block; width: 100%; margin-top: 4px; }
 .hidden { display: none; }
+.node.selected .shape { stroke: #e11d48; stroke-width: 3; }
 
 * { box-sizing: border-box; }
 body { margin: 0; font: 14px Arial, sans-serif; color: #1e293b; }
