@@ -18,6 +18,7 @@ function addNode(x = 180, y = 120, type = 'process', label = 'Process') {
   };
   nodes.push(node);
   render();
+  saveWorkflow();
   return node;
 }
 
@@ -92,6 +93,7 @@ function startDrag(event) {
   }
   function stop() {
     svg.removeEventListener('pointermove', move);
+    saveWorkflow();
   }
   svg.addEventListener('pointermove', move);
   svg.addEventListener('pointerup', stop, { once: true });
@@ -101,6 +103,7 @@ function addEdge(from, to) {
   if (edges.some(edge => edge.from === from && edge.to === to)) return;
   edges.push({ id: 'e' + Math.random().toString(36).slice(2, 8), from, to });
   renderEdges();
+  saveWorkflow();
 }
 
 function renderEdges() {
@@ -145,6 +148,7 @@ document.getElementById('saveNode').addEventListener('click', () => {
   [node.w, node.h] = sizes[node.type] || sizes.process;
   render();
   settings.classList.add('hidden');
+  saveWorkflow();
 });
 document.getElementById('closeSettings').addEventListener('click', () => settings.classList.add('hidden'));
 
@@ -152,6 +156,7 @@ function duplicateNode(node) {
   const copy = { ...node, id: 'n' + Math.random().toString(36).slice(2, 9), x: node.x + 24, y: node.y + 24 };
   nodes.push(copy);
   render();
+  saveWorkflow();
 }
 
 window.addEventListener('keydown', (event) => {
@@ -160,6 +165,7 @@ window.addEventListener('keydown', (event) => {
     edges = edges.filter(edge => edge.from !== selectedId && edge.to !== selectedId);
     selectedId = null;
     render();
+    saveWorkflow();
   }
 });
 
@@ -190,6 +196,34 @@ svg.addEventListener('wheel', (event) => {
 function applyView() {
   viewport.setAttribute('transform', `translate(${pan.x},${pan.y}) scale(${scale})`);
 }
+
+function saveWorkflow() {
+  try {
+    localStorage.setItem('wf:nodes', JSON.stringify(nodes));
+    localStorage.setItem('wf:edges', JSON.stringify(edges));
+  } catch (error) {
+    console.warn('Could not save this workflow.');
+  }
+}
+
+function loadWorkflow() {
+  try {
+    nodes = JSON.parse(localStorage.getItem('wf:nodes')) || [];
+    edges = JSON.parse(localStorage.getItem('wf:edges')) || [];
+  } catch (error) {
+    nodes = [];
+    edges = [];
+  }
+}
+loadWorkflow();
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  if (!confirm('Clear this workflow?')) return;
+  nodes = [];
+  edges = [];
+  saveWorkflow();
+  render();
+});
 
 document.getElementById('addNode').addEventListener('click', () => {
   addNode(180 + nodes.length * 18, 120 + nodes.length * 18, 'process', 'New step');
