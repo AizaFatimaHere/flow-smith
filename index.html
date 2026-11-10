@@ -1,31 +1,138 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Flow Smith</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Interactive Workflow Builder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./styles.css">
 </head>
-<body>
-  <header><h1>Flow Smith</h1><div class="toolbar"><button id="addNode">Add node</button><button id="exportBtn">Export JSON</button><label class="file-button">Import JSON<input id="importInput" type="file" accept="application/json"></label><button id="clearBtn">Clear</button></div></header>
-  <main>
-    <section class="canvas-wrap">
-      <svg id="svg" aria-label="Workflow canvas">
-        <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0 0 L10 3 L0 6 Z"></path></marker></defs>
-        <g id="viewport"><g id="edges"></g><g id="nodes"></g></g>
+
+<body class="h-screen overflow-hidden bg-slate-50">
+  <div class="h-full grid grid-cols-[1fr_320px] grid-rows-[56px_1fr]">
+    <header class="col-span-2 h-14 bg-white border-b border-slate-200 flex items-center px-3 gap-2">
+      <h1 class="font-semibold text-slate-800">Workflow Builder</h1>
+      <div class="ml-auto flex items-center gap-2">
+        <button id="addStartBtn"
+          class="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-sm shadow hover:bg-blue-700">Add Start</button>
+        <button id="exportBtn"
+          class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-sm border border-slate-200 hover:bg-slate-200">Export
+          JSON</button>
+        <label
+          class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-sm border border-slate-200 hover:bg-slate-200 cursor-pointer">Import
+          JSON
+          <input id="importInput" type="file" accept="application/json" class="hidden" />
+        </label>
+        <button id="clearBtn"
+          class="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-700 text-sm border border-rose-200 hover:bg-rose-100">Clear</button>
+      </div>
+    </header>
+
+    <div id="canvasWrap" class="col-span-1 row-span-1 canvas-bg relative">
+      <svg id="svg" class="absolute inset-0 w-full h-full select-none">
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="3" orient="auto"
+            markerUnits="strokeWidth">
+            <path d="M0,0 L10,3 L0,6 Z" fill="#3b82f6"></path>
+          </marker>
+        </defs>
+        <g id="viewport" transform="translate(0,0) scale(1)">
+          <g id="edges"></g>
+          <g id="nodes"></g>
+        </g>
       </svg>
-      
-  <section id="settings" class="panel hidden">
-    <h2>Node settings</h2>
-    <label>Label<input id="nodeLabel" type="text"></label>
-    <label>Shape<select id="nodeType"><option value="process">Process</option><option value="terminator">Start / End</option><option value="decision">Decision</option><option value="document">Document</option><option value="database">Database</option></select></label>
-    <label>Fill<input id="nodeFill" type="color" value="#ffffff"></label>
-    <label>Border<input id="nodeStroke" type="color" value="#3b82f6"></label>
-    <div class="actions"><button id="saveNode">Save</button><button id="closeSettings">Close</button></div>
-  </section>
-    </section>
-    <aside><h2>Quick tips</h2><p>Drag nodes to move them. Shift-click two nodes to connect them.</p><p>Right-click a node to duplicate it. Select a node and press Delete to remove it.</p><p>Hold the mouse on the empty canvas to move around. Use Ctrl + scroll to zoom.</p><p>Import or export your workflow as JSON.</p></aside>
-  </main>
-  <script src="app.js"></script>
+      <input id="labelEditor"
+        class="label-editor hidden rounded-md border border-slate-300 bg-white px-2 py-1 text-sm shadow" />
+      <div id="popover" class="hidden absolute z-20 origin-top-left popover-enter transition-all duration-150">
+        <div class="w-80 rounded-xl border border-slate-200 bg-white shadow-xl">
+          <div class="flex items-center justify-between px-3 py-2 border-b border-slate-200">
+            <div class="text-sm font-medium text-slate-700">Node Settings</div>
+            <button id="closePop" class="text-slate-400 hover:text-slate-600">✕</button>
+          </div>
+          <div class="p-3 space-y-3 text-sm">
+            <div>
+              <label class="block text-xs text-slate-600 mb-1">Label</label>
+              <input id="pLabel" class="w-full rounded-md border border-slate-300 px-2 py-1" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-xs text-slate-600 mb-1">Shape</label>
+                <select id="pType" class="w-full rounded-md border border-slate-300 px-2 py-1">
+                  <option value="terminator">Terminator</option>
+                  <option value="process">Process</option>
+                  <option value="decision">Decision</option>
+                  <option value="document">Document</option>
+                  <option value="database">Database</option>
+                  <option value="input_output">Input/Output</option>
+                  <option value="display">Display</option>
+                  <option value="manual_operation">Manual Operation</option>
+                  <option value="merge">Merge</option>
+                  <option value="manual_input">Manual Input</option>
+                  <option value="connector">Connector</option>
+                  <option value="internal_storage">Internal Storage</option>
+                </select>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-xs text-slate-600 mb-1">Fill</label>
+                  <input id="pFill" type="color" value="#ffffff"
+                    class="h-9 w-full rounded-md border border-slate-300" />
+                </div>
+                <div>
+                  <label class="block text-xs text-slate-600 mb-1">Stroke</label>
+                  <input id="pStroke" type="color" value="#3b82f6"
+                    class="h-9 w-full rounded-md border border-slate-300" />
+                </div>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs text-slate-600 mb-1">Details</label>
+              <textarea id="pDetails" rows="5" class="w-full rounded-md border border-slate-300 px-2 py-1"></textarea>
+            </div>
+            <div class="pt-2 border-t border-slate-200">
+              <div class="flex items-center justify-between mb-2">
+                <label class="text-xs text-slate-600">Attachments</label>
+                <span id="attachHint" class="text-[11px] text-slate-400">Small files persist; large files are
+                  session‑only</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <input id="pFile" type="file"
+                  class="block w-full text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border file:border-slate-300 file:bg-white file:text-slate-700 hover:file:bg-slate-50" />
+                <button id="pAddFile"
+                  class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs border border-slate-200">Add</button>
+              </div>
+              <ul id="pFilesList" class="mt-2 space-y-1 max-h-32 overflow-auto pr-1"></ul>
+            </div>
+            <div class="flex items-center justify-between">
+              <button id="pDelete" class="px-3 py-1.5 rounded-lg bg-rose-600 text-white text-xs">Delete</button>
+              <div class="space-x-2">
+                <button id="pDuplicate"
+                  class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs border border-slate-200">Duplicate</button>
+                <button id="pSave" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs">Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="col-start-2 row-start-2 border-l border-slate-200 bg-white p-4 overflow-y-auto">
+      <h2 class="text-sm font-semibold text-slate-700">Quick Tips</h2>
+      <ul class="mt-2 text-xs text-slate-600 list-disc pl-4 space-y-1">
+        <li>Drag nodes to move. Hold <kbd class='px-1 border border-slate-300 rounded'>Shift</kbd> and drag from a node
+          to connect.</li>
+        <li>Or hover a node and drag from the small dot to connect; use the blue <strong>+</strong> dot to add a child
+          node.</li>
+        <li>Click a node to open settings. Double‑click a label to edit inline. Click a line to select (turns red) then
+          press <kbd>Delete</kbd> to remove.</li>
+      </ul>
+    </aside>
+  </div>
+
+  <script src="./helpers.js"></script>
+  <script src="./storage.js"></script>
+  <script src="./app.js"></script>
 </body>
+
 </html>
