@@ -100,8 +100,8 @@ function addNode({
     type,
     label,
     details,
-    fill: fill ? ? colors.fill,
-    stroke: stroke ? ? colors.stroke,
+    fill: fill??colors.fill,
+    stroke: stroke??colors.stroke,
     attachments: []
   };
   nodes.push(n);
