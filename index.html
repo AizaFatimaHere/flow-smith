@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header><h1>Flow Smith</h1><div class="toolbar"><button id="addNode">Add node</button><button id="clearBtn">Clear</button></div></header>
+  <header><h1>Flow Smith</h1><div class="toolbar"><button id="addNode">Add node</button><button id="exportBtn">Export JSON</button><label class="file-button">Import JSON<input id="importInput" type="file" accept="application/json"></label><button id="clearBtn">Clear</button></div></header>
   <main>
     <section class="canvas-wrap">
       <svg id="svg" aria-label="Workflow canvas">
@@ -24,7 +24,7 @@
     <div class="actions"><button id="saveNode">Save</button><button id="closeSettings">Close</button></div>
   </section>
     </section>
-    <aside><h2>Quick tips</h2><p>Drag nodes to move them. Shift-click two nodes to connect them.</p><p>Right-click a node to duplicate it. Select a node and press Delete to remove it.</p><p>Hold the mouse on the empty canvas to move around. Use Ctrl + scroll to zoom.</p></aside>
+    <aside><h2>Quick tips</h2><p>Drag nodes to move them. Shift-click two nodes to connect them.</p><p>Right-click a node to duplicate it. Select a node and press Delete to remove it.</p><p>Hold the mouse on the empty canvas to move around. Use Ctrl + scroll to zoom.</p><p>Import or export your workflow as JSON.</p></aside>
   </main>
   <script src="app.js"></script>
 </body>

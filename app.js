@@ -225,6 +225,36 @@ document.getElementById('clearBtn').addEventListener('click', () => {
   render();
 });
 
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const file = new Blob([JSON.stringify({ nodes, edges }, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(file);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'workflow.json';
+  link.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('importInput').addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!Array.isArray(data.nodes) || !Array.isArray(data.edges)) throw new Error('Invalid workflow');
+      nodes = data.nodes;
+      edges = data.edges;
+      saveWorkflow();
+      render();
+    } catch (error) {
+      alert('That file is not a valid workflow.');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+});
+
 document.getElementById('addNode').addEventListener('click', () => {
   addNode(180 + nodes.length * 18, 120 + nodes.length * 18, 'process', 'New step');
 });
